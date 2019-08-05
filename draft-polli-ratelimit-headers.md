@@ -323,15 +323,23 @@ The `RateLimit-Reset` response header field indicates either:
 The header value is:
 
     RateLimit-Reset = "RateLimit-Reset" ":" OWS ratelimit-reset-value
-    ratelimit-reset-value = Retry-After
-    
-The value of `Retry-After` is defined in [RFC7231] appendix D and:
+    ratelimit-reset-value = delay-seconds / HTTP-date
 
-- it SHOULD be number of seconds to delay after the quota is exhausted;
-- it CAN be an HTTP-date.
+A delay-seconds value is a non-negative decimal integer, representing time in seconds.
 
-The preferred way is to expose the number of seconds to delay to mitigate
-the risk of clock skew between client and server, and potential issues
+    delay-seconds  = 1*DIGIT
+
+The syntax of `HTTP-date` is defined in [RFC7231] appendix D.
+
+The `ratelimit-reset-value`:
+
+- SHOULD use the `delay-seconds` notation;
+- MAY use the `HTTP-date` notation.
+
+The `HTTP-date` notation is NOT RECOMMENDED.
+
+The `delta-seconds` notation is preferable because mitigates
+the risks related to clock skew between client and server, and potential issues
 of thundering herd when too many clients are serviced with the same timestamp.
 
     
@@ -340,7 +348,6 @@ Examples:
 ~~~
    RateLimit-Reset: 50
    RateLimit-Reset: Tue, 15 Nov 1994 08:12:31 GMT
-
 ~~~
 
 # Providing Rate-Limit headers
